@@ -1,36 +1,19 @@
-#include "name_mapper.h"
-#include <fstream>
+#include "reprocessor/name_mapper/name_mapper.h"
 #include <iostream>
 
-// 您需要确保您的编译环境可以找到这个json库的头文件
-// 例如，将其放在项目目录或系统包含路径中
-#include "nlohmann/json.hpp"
-
-// 为了方便，我们直接使用nlohmann/json的命名空间
-using json = nlohmann::json;
-
-bool ProjectNameMapper::loadMappings(const std::string& jsonFilePath) {
-    std::ifstream jsonFile(jsonFilePath);
-    if (!jsonFile.is_open()) {
-        std::cerr << "Error: Could not open mapping file " << jsonFilePath << std::endl;
+bool ProjectNameMapper::loadMappings(const nlohmann::json& jsonData) {
+    // 检查传入的是否是一个JSON对象
+    if (!jsonData.is_object()) {
+        std::cerr << "Error: [NameMapper] Provided JSON data is not an object." << std::endl;
         return false;
     }
 
-    try {
-        json mappings_json;
-        jsonFile >> mappings_json; // 从文件解析JSON
-
-        // 遍历JSON对象并填充我们的map
-        for (auto& el : mappings_json.items()) {
-            if (el.value().is_string()) {
-                mappings[el.key()] = el.value();
-            }
+    // 遍历JSON对象并填充我们的map
+    for (auto& el : jsonData.items()) {
+        if (el.value().is_string()) {
+            mappings[el.key()] = el.value();
         }
-    } catch (json::parse_error& e) {
-        std::cerr << "Error: JSON parsing failed in file " << jsonFilePath << ": " << e.what() << std::endl;
-        return false;
     }
-
     return true;
 }
 

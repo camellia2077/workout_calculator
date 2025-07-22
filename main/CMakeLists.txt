@@ -8,10 +8,14 @@ project(WorkoutParser VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- 自动查找所有源文件 ---
-# 使用 file(GLOB_RECURSE) 递归扫描子目录中的所有 .cpp 文件
-# CONFIGURE_DEPENDS 确保在添加或删除源文件后，CMake会自动重新配置
-file(GLOB_RECURSE SRC_FILES
+# --- 自动查找 common 目录的源文件 ---
+file(GLOB COMMON_SOURCES
+    CONFIGURE_DEPENDS
+    "common/*.cpp"
+)
+
+# --- 自动查找 reprocessor 目录的源文件 ---
+file(GLOB_RECURSE REPROCESSOR_SOURCES
     CONFIGURE_DEPENDS
     "reprocessor/data_processor/*.cpp"
     "reprocessor/log_parser/*.cpp"
@@ -22,11 +26,12 @@ file(GLOB_RECURSE SRC_FILES
 find_package(nlohmann_json REQUIRED)
 
 # --- 定义可执行文件 ---
-# 将 main.cpp 和上面自动查找到的所有源文件一起添加
+# 将 main.cpp 和上面分组查找到的源文件一起添加
 add_executable(
     workout_tracker
     main.cpp
-    ${SRC_FILES}
+    ${COMMON_SOURCES}
+    ${REPROCESSOR_SOURCES}
 )
 
 # --- 为目标单独添加头文件搜索路径 ---
@@ -41,10 +46,10 @@ target_include_directories(
 # --- 链接库 ---
 target_link_libraries(
     workout_tracker
-    PRIVATE
-    nlohmann_json::nlohmann_json
+    PRIVATE 
+    nlohmann_json::nlohmann_json 
 )
 
-# 打印出可执行文件位置，方便调试
+# 打印出可执行文件位置，方便调试 
 message(STATUS "Successfully configured workout_tracker.")
 message(STATUS "Executable will be created at: ${CMAKE_BINARY_DIR}/workout_tracker.exe")
