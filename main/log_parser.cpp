@@ -1,16 +1,16 @@
-#include "parser.h"
+#include "log_parser.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <algorithm>
 
-DataParser::DataParser() {}
+LogParser::LogParser() {}
 
-const std::vector<DailyData>& DataParser::getParsedData() const {
+const std::vector<DailyData>& LogParser::getParsedData() const {
     return allDailyData;
 }
 
-bool DataParser::parseFile(const std::string& filePath) {
+bool LogParser::parseFile(const std::string& filePath) {
     std::ifstream file(filePath);
     if (!file.is_open()) {
         std::cerr << "Error: Could not open file " << filePath << std::endl;
@@ -52,7 +52,7 @@ bool DataParser::parseFile(const std::string& filePath) {
             if(newDate)
             {
                 ProjectData newProject;
-                newProject.projectName = line;
+                newProject.projectName = line; // 直接存入原始项目名
                 currentDailyData.projects.push_back(newProject);
                 newDate = false;
             }
@@ -76,7 +76,7 @@ bool DataParser::parseFile(const std::string& filePath) {
     return true;
 }
 
-void DataParser::parseContentLine(const std::string& line, ProjectData& projectData) {
+void LogParser::parseContentLine(const std::string& line, ProjectData& projectData) {
     std::stringstream ss(line);
     char plusSign;
     ss >> plusSign; // 读取'+'

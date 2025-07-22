@@ -1,14 +1,14 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef LOG_PARSER_H
+#define LOG_PARSER_H
 
 #include <string>
 #include <vector>
 #include "parsed_data.h"
 
-class DataParser {
+class LogParser {
 public:
     // 构造函数
-    DataParser();
+    LogParser();
 
     // 解析指定路径的txt文件
     // 成功返回true, 失败返回false
@@ -24,4 +24,4 @@ private:
     void parseContentLine(const std::string& line, ProjectData& projectData);
 };
 
-#endif // PARSER_H
+#endif // LOG_PARSER_H
