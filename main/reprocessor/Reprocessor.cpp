@@ -9,7 +9,6 @@
 #include <ctime>   
 #include <iomanip>
 
-// ... configure(...) 和 processLogFile(...) 的实现保持不变 ...
 bool Reprocessor::configure(const std::string& mappingFilePath) {
     auto jsonDataOpt = JsonReader::readFile(mappingFilePath);
     if (!jsonDataOpt) {
@@ -70,8 +69,6 @@ std::vector<DailyData> Reprocessor::processLogFile(
     return data;
 }
 
-
-// --- 新增方法的实现 ---
 std::string Reprocessor::formatDataToString(const std::vector<DailyData>& processedData)
 {
     // 将格式化任务委托给 LogFormatter 模块

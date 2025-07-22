@@ -8,51 +8,33 @@ project(WorkoutParser VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- 自动查找 common 目录的源文件 ---
-file(GLOB COMMON_SOURCES
-    CONFIGURE_DEPENDS
-    "common/*.cpp"
-)
+# --- 自动查找您项目的所有源文件 ---
+# (这部分您的写法是正确的，我们保持不变)
+file(GLOB COMMON_SOURCES "common/*.cpp")
+file(GLOB_RECURSE REPROCESSOR_SOURCES "reprocessor/*.cpp")
+file(GLOB_RECURSE DB_INSERTER_SOURCES "db_inserter/*.cpp")
 
-# --- 自动查找 reprocessor 目录的源文件 ---
-file(GLOB_RECURSE REPROCESSOR_SOURCES
-    CONFIGURE_DEPENDS
-    "reprocessor/*.cpp"
-    "reprocessor/data_processor/*.cpp"
-    "reprocessor/formatter/*.cpp"
-    "reprocessor/log_parser/*.cpp"
-    "reprocessor/name_mapper/*.cpp"
-)
 
-# --- 查找 nlohmann-json 库 ---
+# --- KEY FIX #1: 查找已安装的库 ---
+# 查找 nlohmann_json (您的文件中已有)
 find_package(nlohmann_json REQUIRED)
+# 查找 SQLite3 (这是您文件中缺少的)
+find_package(SQLite3 REQUIRED)
+
 
 # --- 定义可执行文件 ---
-# 将 main.cpp 和上面分组查找到的源文件一起添加
+# (这部分您的写法是正确的)
 add_executable(
     workout_tracker
     main.cpp
     ${COMMON_SOURCES}
     ${REPROCESSOR_SOURCES}
+    ${DB_INSERTER_SOURCES}
 )
 
 
-# --- 为目标单独添加头文件搜索路径 (宏观路径法) ---
-#
-# 以下设置采用了“宏观路径”策略，这是现代C++社区更推崇的方式。
-#
-# 1. 工作原理:
-#    通过将项目根目录 (${CMAKE_CURRENT_SOURCE_DIR}) 作为唯一的顶级搜索路径，
-#    要求所有 #include 都必须从根目录写起，例如：
-#    #include "reprocessor/log_parser/log_parser.h"
-#
-# 2. 优点:
-#    - 避免名称冲突：从根本上解决了不同模块下可能出现的同名头文件问题。
-#    - 依赖清晰：在代码中能清楚地看出所包含的头文件属于哪个模块。
-#
-
-# --- 为目标单独添加头文件搜索路径 ---
-# 这是现代CMake的首选方式，作用域更精确
+# --- 为目标添加头文件搜索路径 ---
+# (您的“宏观路径法”很好，保持不变。find_package会自动处理库的头文件路径)
 target_include_directories(
     workout_tracker
     PRIVATE
@@ -60,12 +42,15 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# --- 链接库 ---
+
+# --- KEY FIX #2: 链接到找到的库目标 ---
 target_link_libraries(
     workout_tracker
     PRIVATE 
     nlohmann_json::nlohmann_json 
+    SQLite::SQLite3 # <-- 这是最关键的修复：链接到 SQLite3
 )
+
 
 # 打印出可执行文件位置，方便调试 
 message(STATUS "Successfully configured workout_tracker.")

@@ -2,7 +2,7 @@
 #define DATA_PROCESSOR_H
 
 #include <vector>
-#include "reprocessor/_shared/parsed_data.h"
+#include "common/parsed_data.h"
 
 class DataProcessor {
 public:

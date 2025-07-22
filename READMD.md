@@ -8,15 +8,26 @@
 ├── CMakeLists.txt
 ├── main.cpp
 ├── mapping.json
-└── reprocessor/
+├── common/
+│   ├── JsonReader.cpp
+│   ├── JsonReader.h
+│   └── parsed_data.h
+├── db_inserter/
+│   ├── SqliteManager.cpp
+│   └── SqliteManager.h
+└── reprocessor
     ├── data_processor/
     │   ├── DataProcessor.cpp
     │   └── DataProcessor.h
+    ├── log_formatter/
+    │   ├── LogFormatter.cpp
+    │   └── LogFormatter.h
     ├── log_parser/
-    │   ├── log_parser.cpp
-    │   ├── log_parser.h
-    │   └── parsed_data.h
-    └── name_mapper/
-        ├── name_mapper.cpp
-        └── name_mapper.h
+    │   ├── LogParser.cpp
+    │   └── LogParser.h
+    ├── name_mapper/
+    │   ├── ProjectNameMapper.cpp
+    │   └── ProjectNameMapper.h
+    ├── Reprocessor.cpp
+    └── Reprocessor.h
 ```

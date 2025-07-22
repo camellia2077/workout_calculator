@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "reprocessor/_shared/parsed_data.h"
+#include "common/parsed_data.h"
 
 class LogFormatter {
 public:
