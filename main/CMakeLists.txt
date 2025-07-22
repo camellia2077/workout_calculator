@@ -12,7 +12,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # (这部分您的写法是正确的，我们保持不变)
 file(GLOB COMMON_SOURCES "common/*.cpp")
 file(GLOB_RECURSE REPROCESSOR_SOURCES "reprocessor/*.cpp")
-file(GLOB_RECURSE DB_INSERTER_SOURCES "db_inserter/*.cpp")
+file(GLOB_RECURSE DB_INSERTER_SOURCES 
+    "db_inserter/*.cpp"
+    "db_inserter/_internal/*.cpp"
+
+)
 
 
 # --- KEY FIX #1: 查找已安装的库 ---

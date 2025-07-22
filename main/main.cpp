@@ -7,9 +7,9 @@
 #include <fstream>
 #include <filesystem>
 
-// 包含总控类和数据库管理器的头文件
+// 包含总控类和新的数据库管理器的头文件
 #include "reprocessor/Reprocessor.h"
-#include "db_inserter/SqliteManager.h" 
+#include "db_inserter/DataManager.h" // <-- 修改: 包含了新的 DataManager.h
 
 /**
  * @brief 将一个字符串内容写入指定的文件。
@@ -29,7 +29,6 @@ bool writeStringToFile(const std::string& output_filepath, const std::string& co
  * @brief 打印更新后的使用说明
  */
 void printUsage(const char* programName) {
-    // <-- 修改：简化了用法说明
     std::cerr << "Usage: " << programName << " --path <log_file.txt> [--year <YYYY>]" << std::endl;
     std::cerr << std::endl;
     std::cerr << "Description:" << std::endl;
@@ -118,18 +117,20 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // --- 步骤 6: 总是尝试保存到硬编码的数据库路径 ---
+    // --- 步骤 6: 使用 DataManager 保存数据到数据库 ---
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "Database sync process started..." << std::endl;
 
-    SqliteManager dbManager;
+    // 修改: 实例化新的 DataManager 类
+    DataManager dbManager;
     
-    // 使用我们构建好的 db_path
-    if (!dbManager.connect(db_path.string())) {
-        std::cerr << "Error: Database connection failed for: " << db_path.string() << std::endl;
+    // 修改: 调用 connectAndInitialize 一步完成连接和初始化
+    if (!dbManager.connectAndInitialize(db_path.string())) {
+        std::cerr << "Error: Database setup failed for: " << db_path.string() << std::endl;
         return 1;
     }
-
+    
+    // 修改: 调用 saveData 方法，接口保持不变，但现在是通过 DataManager
     if (dbManager.saveData(processedData)) {
         std::cout << "Data successfully saved to database: " << db_path.string() << std::endl;
     } else {
