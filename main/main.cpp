@@ -82,11 +82,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // --- 2. 动态获取程序路径并构建数据库路径 (核心修改) ---
+    // --- 2. 动态获取程序路径并构建数据库路径  ---
     std::filesystem::path exe_path = argv[0];
-    std::filesystem::path db_path = exe_path.parent_path() / "workouts.sqlite";
+    std::filesystem::path db_path = exe_path.parent_path() / "workouts.sqlite3";
 
-    // --- (步骤 3, 4, 5, 6 流程不变，但合并在一起) ---
     // 3. 配置 Reprocessor
     Reprocessor reprocessor;
     std::cout << "Configuring reprocessor with '" << mapping_filename << "'..." << std::endl;
