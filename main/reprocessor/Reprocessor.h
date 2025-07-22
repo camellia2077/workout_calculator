@@ -11,6 +11,9 @@
 #include "reprocessor/log_parser/LogParser.h"
 #include "reprocessor/name_mapper/ProjectNameMapper.h"
 #include "reprocessor/log_formatter/LogFormatter.h"
+// 引入新的处理器头文件
+#include "reprocessor/volume_calculator/VolumeCalculator.h"
+#include "reprocessor/date_processor/DateProcessor.h"
 
 class Reprocessor {
 public:
@@ -22,7 +25,7 @@ public:
     bool configure(const std::string& mappingFilePath);
 
     /**
-     * @brief 处理一个原始日志文件，返回包含完整信息的结构化数据。
+     * @brief 协调处理一个原始日志文件，返回包含完整信息的结构化数据。
      * @param logFilePath 要处理的日志文件路径。
      * @param specifiedYear 可选参数，用于指定年份。如果未提供，则自动使用当前系统年份。
      * @return 包含所有处理后数据的向量。如果处理失败则返回空向量。

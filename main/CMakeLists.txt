@@ -22,7 +22,8 @@ message(STATUS "Gathering sources for 'workout_tracker_app'...")
 file(GLOB COMMON_SOURCES "common/*.cpp")
 file(GLOB REPROCESSOR_SOURCES 
     "reprocessor/*.cpp"
-    "reprocessor/data_processor/*.cpp"
+    "reprocessor/volume_calculator/*.cpp"
+    "reprocessor/date_processor/*.cpp"
     "reprocessor/log_formatter/*.cpp"
     "reprocessor/log_parser/*.cpp"
     "reprocessor/name_mapper/*.cpp"
@@ -67,7 +68,8 @@ message(STATUS "Gathering sources for 'workout_tracker_cli'...")
 file(GLOB COMMON_SOURCES "common/*.cpp")
 file(GLOB REPROCESSOR_SOURCES 
     "reprocessor/*.cpp"
-    "reprocessor/data_processor/*.cpp"
+    "reprocessor/volume_calculator/*.cpp"
+    "reprocessor/date_processor/*.cpp"
     "reprocessor/log_formatter/*.cpp"
     "reprocessor/log_parser/*.cpp"
     "reprocessor/name_mapper/*.cpp"

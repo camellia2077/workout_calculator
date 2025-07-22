@@ -11,23 +11,27 @@
 ├── common/
 │   ├── JsonReader.cpp
 │   ├── JsonReader.h
-│   └── parsed_data.h
+│   └── parsed_data.h # 共享的log结构体数据类型
 ├── db_inserter/
 │   ├── SqliteManager.cpp
 │   └── SqliteManager.h
-└── reprocessor
-    ├── data_processor/
-    │   ├── DataProcessor.cpp
-    │   └── DataProcessor.h
-    ├── log_formatter/
+└── reprocessor # 数据预处理
+    ├── date_processor # 补全日期
+    │   ├── DateProcessor.cpp
+    │   └── DateProcessor.h
+    ├── log_formatter # 把解析的内容格式化输出
     │   ├── LogFormatter.cpp
     │   └── LogFormatter.h
-    ├── log_parser/
+    ├── log_parser # 把log内容解析成结构体 
     │   ├── LogParser.cpp
     │   └── LogParser.h
-    ├── name_mapper/
+    ├── name_mapper # 映射项目名称
     │   ├── ProjectNameMapper.cpp
     │   └── ProjectNameMapper.h
-    ├── Reprocessor.cpp
+    └── volume_calculator/ 计算容量
+    │    ├── VolumeCalculator.cpp
+    │    └── VolumeCalculator.h
+    ├── Reprocessor.cpp # 封装
     └── Reprocessor.h
+ 
 ```
