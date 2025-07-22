@@ -1,12 +1,15 @@
+// Reprocessor.cpp
+
 #include "reprocessor/Reprocessor.h"
 #include "reprocessor/data_processor/DataProcessor.h"
-#include "common/JsonReader.h" // Reprocessor现在需要使用JsonReader
+#include "common/JsonReader.h" 
 
 #include <iostream>
 #include <chrono>
 #include <ctime>   
 #include <iomanip>
 
+// ... configure(...) 和 processLogFile(...) 的实现保持不变 ...
 bool Reprocessor::configure(const std::string& mappingFilePath) {
     auto jsonDataOpt = JsonReader::readFile(mappingFilePath);
     if (!jsonDataOpt) {
@@ -65,4 +68,12 @@ std::vector<DailyData> Reprocessor::processLogFile(
 
     // 6. 返回处理完成的数据
     return data;
+}
+
+
+// --- 新增方法的实现 ---
+std::string Reprocessor::formatDataToString(const std::vector<DailyData>& processedData)
+{
+    // 将格式化任务委托给 LogFormatter 模块
+    return LogFormatter::format(processedData);
 }

@@ -1,46 +1,34 @@
+// main.cpp
+
 #include <iostream>
 #include <vector>
 #include <string>
 #include <optional>
-#include <fstream>      // 用於文件流操作
-#include <filesystem>   // 用於創建目錄和處理路徑 (C++17)
+#include <fstream>
+#include <filesystem>
 
-// 包含總控類和共享數據結構的頭文件
+// 包含总控类头文件
 #include "reprocessor/Reprocessor.h"
-#include "reprocessor/_shared/parsed_data.h"
 
-// 新函數：將處理後的數據寫入文件
-// 參數: output_filepath - 完整的輸出文件路徑
-// 參數: allData - 包含所有已處理數據的 vector
-// 返回: 如果寫入成功返回 true，否則返回 false
-bool writeFinalDataToFile(const std::string& output_filepath, const std::vector<DailyData>& allData) {
-    // *** 錯誤已修正 ***
-    std::ofstream file(output_filepath); // 創建並打開一個輸出文件流
+/**
+ * @brief 将一个字符串内容写入指定的文件。
+ * 这个函数取代了之前复杂的 writeFinalDataToFile 函数。
+ * @param output_filepath 完整的输出文件路径。
+ * @param content 要写入文件的字符串内容。
+ * @return 如果写入成功返回 true，否则返回 false。
+ */
+bool writeStringToFile(const std::string& output_filepath, const std::string& content) {
+    std::ofstream file(output_filepath);
     if (!file.is_open()) {
         std::cerr << "Error: Failed to open output file: " << output_filepath << std::endl;
         return false;
     }
-
-    file << "--- Processed Workout Data ---" << std::endl;
-    for (const auto& daily : allData) {
-        file << "Date: " << daily.date << std::endl;
-        for (const auto& project : daily.projects) {
-            file << "  Project: " << project.projectName << std::endl;
-            file << "    Weight: " << project.weight << "kg" << std::endl;
-            file << "    Reps: ";
-            for (size_t i = 0; i < project.reps.size(); ++i) {
-                file << project.reps[i] << (i == project.reps.size() - 1 ? "" : ", ");
-            }
-            file << std::endl;
-            file << "    Volume: " << project.volume << " kg" << std::endl;
-        }
-    }
-    file << "------------------------------" << std::endl;
+    file << content; // 直接写入由 Reprocessor 格式化好的字符串
     file.close();
     return true;
 }
 
-// 打印使用說明
+// 打印使用说明
 void printUsage(const char* programName) {
     std::cerr << "Usage: " << programName << " --path <log_file.txt> [--year <YYYY>]" << std::endl;
     std::cerr << "Options:" << std::endl;
@@ -89,32 +77,34 @@ int main(int argc, char* argv[]) {
 
     // 3. 调用Reprocessor处理日志文件
     std::cout << "Processing log file '" << log_filepath << "'..." << std::endl;
-    std::vector<DailyData> finalData = reprocessor.processLogFile(log_filepath, specified_year);
+    std::vector<DailyData> processedData = reprocessor.processLogFile(log_filepath, specified_year);
 
-    if (finalData.empty()) {
+    if (processedData.empty()) {
         std::cerr << "Error: Failed to process log file or no data found." << std::endl;
         return 1;
     }
     std::cout << "Log file processed successfully." << std::endl;
+    
+    // --- 步骤 4 已更新 ---
+    // 4. 调用 Reprocessor 将处理后的数据格式化为字符串
+    std::cout << "Formatting data for output..." << std::endl;
+    std::string outputContent = reprocessor.formatDataToString(processedData);
 
-    // 4. 將最終結果寫入文件而不是打印到控制台
+    // 5. 将格式化后的字符串写入文件
     try {
         const std::string output_dir = "reprocessed";
-        // 創建 'reprocessed' 目錄 (如果不存在)
         std::filesystem::create_directory(output_dir);
 
-        // 從輸入路徑構建輸出文件名
         std::filesystem::path input_path(log_filepath);
-        // 確保文件名是有效的UTF-8字符串
         std::string output_filename = input_path.stem().u8string() + "_reprocessed.txt";
         std::filesystem::path output_filepath = std::filesystem::path(output_dir) / output_filename;
 
         std::cout << "Writing processed data to '" << output_filepath.string() << "'..." << std::endl;
-
-        if (writeFinalDataToFile(output_filepath.string(), finalData)) {
+        
+        // 调用新的写入函数
+        if (writeStringToFile(output_filepath.string(), outputContent)) {
             std::cout << "Successfully wrote data to file." << std::endl;
         } else {
-            // writeFinalDataToFile 內部會打印詳細錯誤
             std::cerr << "Error: Could not write the output file." << std::endl;
             return 1;
         }

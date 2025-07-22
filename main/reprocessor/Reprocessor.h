@@ -1,3 +1,5 @@
+// Reprocessor.h
+
 #ifndef REPROCESSOR_H
 #define REPROCESSOR_H
 
@@ -8,6 +10,7 @@
 #include "reprocessor/_shared/parsed_data.h"
 #include "reprocessor/log_parser/LogParser.h"
 #include "reprocessor/name_mapper/ProjectNameMapper.h"
+#include "reprocessor/log_formatter/LogFormatter.h" // <-- 1. 包含 LogFormatter.h
 
 class Reprocessor {
 public:
@@ -28,6 +31,14 @@ public:
         const std::string& logFilePath,
         std::optional<int> specifiedYear = std::nullopt
     );
+
+    /**
+     * @brief (新增) 将处理后的数据格式化为单个字符串。
+     * 这个方法在内部调用 LogFormatter 来完成实际的格式化工作。
+     * @param processedData 经过 processLogFile 处理后的数据。
+     * @return 一个格式化后的字符串，可以直接写入文件。
+     */
+    std::string formatDataToString(const std::vector<DailyData>& processedData);
 
 private:
     LogParser parser;

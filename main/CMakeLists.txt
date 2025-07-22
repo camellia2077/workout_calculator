@@ -19,6 +19,7 @@ file(GLOB_RECURSE REPROCESSOR_SOURCES
     CONFIGURE_DEPENDS
     "reprocessor/*.cpp"
     "reprocessor/data_processor/*.cpp"
+    "reprocessor/formatter/*.cpp"
     "reprocessor/log_parser/*.cpp"
     "reprocessor/name_mapper/*.cpp"
 )
