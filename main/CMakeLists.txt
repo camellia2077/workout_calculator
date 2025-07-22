@@ -17,6 +17,7 @@ file(GLOB COMMON_SOURCES
 # --- 自动查找 reprocessor 目录的源文件 ---
 file(GLOB_RECURSE REPROCESSOR_SOURCES
     CONFIGURE_DEPENDS
+    "reprocessor/*.cpp"
     "reprocessor/data_processor/*.cpp"
     "reprocessor/log_parser/*.cpp"
     "reprocessor/name_mapper/*.cpp"
