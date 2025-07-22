@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "parsed_data.h"
+#include "reprocessor/_shared/parsed_data.h"
 
 class LogParser {
 public:
