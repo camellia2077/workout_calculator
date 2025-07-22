@@ -1,8 +1,8 @@
 #include <iostream> 
 #include <vector> 
 #include <fstream> 
-#include "reprocessor/log_parser/log_parser.h" 
-#include "reprocessor/name_mapper/name_mapper.h" 
+#include "reprocessor/log_parser/LogParser.h" 
+#include "reprocessor/name_mapper/ProjectNameMapper.h" 
 #include "reprocessor/_shared/parsed_data.h" 
 #include "reprocessor/data_processor/DataProcessor.h" 
 #include "common/JsonReader.h" // 新增：包含独立的JsonReader模块

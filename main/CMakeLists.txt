@@ -34,6 +34,21 @@ add_executable(
     ${REPROCESSOR_SOURCES}
 )
 
+
+# --- 为目标单独添加头文件搜索路径 (宏观路径法) ---
+#
+# 以下设置采用了“宏观路径”策略，这是现代C++社区更推崇的方式。
+#
+# 1. 工作原理:
+#    通过将项目根目录 (${CMAKE_CURRENT_SOURCE_DIR}) 作为唯一的顶级搜索路径，
+#    要求所有 #include 都必须从根目录写起，例如：
+#    #include "reprocessor/log_parser/log_parser.h"
+#
+# 2. 优点:
+#    - 避免名称冲突：从根本上解决了不同模块下可能出现的同名头文件问题。
+#    - 依赖清晰：在代码中能清楚地看出所包含的头文件属于哪个模块。
+#
+
 # --- 为目标单独添加头文件搜索路径 ---
 # 这是现代CMake的首选方式，作用域更精确
 target_include_directories(
