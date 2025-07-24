@@ -5,6 +5,11 @@
 #include <filesystem>
 #include <limits>
 
+// (新增) 引入 Windows 头文件以支持编码设置
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 /**
  * @brief 清理标准输入缓冲区。
  * 在读取失败或需要忽略多余输入时调用。
@@ -14,6 +19,12 @@ void clearCinBuffer() {
 }
 
 int main(int argc, char* argv[]) {
+    // (新增) 设置 Windows 控制台的输入和输出编码为 UTF-8
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+
     // 1. 打印欢迎界面
     std::cout << "=================================================" << std::endl; //
     std::cout << "    Workout Log Processor - Interactive Mode" << std::endl; //

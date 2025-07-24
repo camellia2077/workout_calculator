@@ -6,6 +6,11 @@
 #include <string>
 #include <filesystem>
 
+// (新增) 引入 Windows 头文件以支持编码设置
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 void printUsage(const char* programName) {
     // 更新用法说明，表明 -p/--path 是可选的
     std::cerr << "Usage: " << programName << " [-p|--path] <log_file.txt> [--year <YYYY>] [--validate]" << std::endl;
@@ -69,6 +74,12 @@ std::optional<AppConfig> parseCommandLine(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
+    // (新增) 设置 Windows 控制台的输入和输出编码为 UTF-8
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+
     auto configOpt = parseCommandLine(argc, argv);
     if (!configOpt.has_value()) {
         for (int i = 1; i < argc; ++i) {
