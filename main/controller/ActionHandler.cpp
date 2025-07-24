@@ -13,7 +13,8 @@ bool ActionHandler::run(const AppConfig& config) {
 
     // 2. (新流程) 步骤一：验证文件
     std::cout << "Validating log file '" << config.log_filepath << "'..." << std::endl;
-    if (!reprocessor_.validateFile(config.log_filepath)) {
+    // 将 mapping_path 也传递过去
+    if (!reprocessor_.validateFile(config.log_filepath, config.mapping_path)) {
         std::cerr << "Error: Log file validation failed. Please check the file format." << std::endl;
         return false;
     }

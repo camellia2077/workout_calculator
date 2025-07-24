@@ -7,6 +7,8 @@
 #include <chrono>
 #include <ctime>   
 #include <iomanip>
+#include <vector>
+#include <string>
 
 bool Reprocessor::configure(const std::string& mappingFilePath) {
     auto jsonDataOpt = JsonReader::readFile(mappingFilePath);
@@ -20,10 +22,10 @@ bool Reprocessor::configure(const std::string& mappingFilePath) {
 /**
  * @brief (新) 纯验证接口的实现
  */
-bool Reprocessor::validateFile(const std::string& logFilePath) const {
+bool Reprocessor::validateFile(const std::string& logFilePath, const std::string& mappingFilePath) const {
     // 直接将任务委托给 Validator
-    return Validator::validate(logFilePath);
-}
+    return Validator::validate(logFilePath, mappingFilePath);
+} // <-- ADDED: Missing curly brace
 
 /**
  * @brief (新) 纯解析接口的实现

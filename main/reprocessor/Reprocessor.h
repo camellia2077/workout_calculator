@@ -25,9 +25,10 @@ public:
     /**
      * @brief (新) 仅验证日志文件格式的接口。
      * @param logFilePath 要验证的日志文件路径。
+     * @param mappingFilePath 用于验证项目名称的映射文件路径。
      * @return 如果文件格式有效则返回true，否则返回false。
      */
-    bool validateFile(const std::string& logFilePath) const;
+    bool validateFile(const std::string& logFilePath, const std::string& mappingFilePath) const; // MODIFIED: Kept the correct version
 
     /**
      * @brief (新) 仅解析日志文件的接口（假定文件已通过验证）。
