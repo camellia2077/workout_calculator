@@ -1,26 +1,54 @@
+// ActionHandler.cpp
+
 #include "ActionHandler.h"
 #include <iostream>
 #include <fstream>
 #include <filesystem>
 
 bool ActionHandler::run(const AppConfig& config) {
-    // --- 开始执行核心工作流 ---
-
     // 1. 配置 Reprocessor
     std::cout << "Configuring reprocessor with '" << config.mapping_path << "'..." << std::endl;
     if (!reprocessor_.configure(config.mapping_path)) { return false; }
     std::cout << "Reprocessor configured successfully." << std::endl;
 
-    // 2. 处理日志文件
-    std::cout << "Processing log file '" << config.log_filepath << "'..." << std::endl;
-    std::vector<DailyData> processedData = reprocessor_.processLogFile(config.log_filepath, config.specified_year);
-    if (processedData.empty()) {
-        std::cout << "Warning: No data was processed from the log file. Exiting." << std::endl;
-        return true; // 没有数据不是一个致命错误
+    // 2. (新流程) 步骤一：验证文件
+    std::cout << "Validating log file '" << config.log_filepath << "'..." << std::endl;
+    if (!reprocessor_.validateFile(config.log_filepath)) {
+        std::cerr << "Error: Log file validation failed. Please check the file format." << std::endl;
+        return false;
     }
-    std::cout << "Log file processed successfully." << std::endl;
+    std::cout << "Validation successful." << std::endl;
 
-    // 3. 将格式化后的字符串写入文件
+    // 如果是仅验证模式，到此结束
+    if (config.validate_only) {
+        std::cout << "Validation-only mode. Exiting." << std::endl;
+        return true;
+    }
+
+    // --- 进入完整处理流程 ---
+    std::cout << "----------------------------------------" << std::endl;
+    
+    // 3. (新流程) 步骤二：解析文件
+    std::cout << "Parsing log file..." << std::endl;
+    auto parsedDataOpt = reprocessor_.parseFile(config.log_filepath);
+    if (!parsedDataOpt.has_value()) {
+        std::cerr << "Error: File parsing failed after successful validation. This might indicate an internal issue." << std::endl;
+        return false;
+    }
+
+    std::vector<DailyData> processedData = parsedDataOpt.value();
+    if (processedData.empty()) {
+        std::cout << "Warning: No data was found in the log file. Exiting." << std::endl;
+        return true;
+    }
+    std::cout << "File parsed successfully." << std::endl;
+
+    // 4. (新流程) 步骤三：处理数据
+    std::cout << "Processing extracted data..." << std::endl;
+    reprocessor_.processData(processedData, config.specified_year);
+    std::cout << "Data processed successfully." << std::endl;
+
+    // 5. 将格式化后的字符串写入文件
     std::string outputContent = reprocessor_.formatDataToString(processedData);
     try {
         const std::string output_dir = "reprocessed";
@@ -37,7 +65,7 @@ bool ActionHandler::run(const AppConfig& config) {
         return false;
     }
 
-    // 4. 使用 DataManager 保存数据到数据库
+    // 6. 保存到数据库
     std::cout << "----------------------------------------" << std::endl;
     std::cout << "Database sync process started..." << std::endl;
     if (!dataManager_.connectAndInitialize(config.db_path)) {
@@ -53,7 +81,6 @@ bool ActionHandler::run(const AppConfig& config) {
     return true;
 }
 
-// 私有辅助函数保持不变
 bool ActionHandler::writeStringToFile(const std::string& filepath, const std::string& content) {
     std::ofstream file(filepath);
     if (!file.is_open()) {

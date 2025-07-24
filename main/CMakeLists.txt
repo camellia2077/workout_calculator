@@ -27,6 +27,7 @@ file(GLOB REPROCESSOR_SOURCES
     "reprocessor/log_formatter/*.cpp"
     "reprocessor/log_parser/*.cpp"
     "reprocessor/name_mapper/*.cpp"
+    "reprocessor/validator/*.cpp"
 )
 file(GLOB DB_INSERTER_SOURCES 
     "db_inserter/*.cpp"
@@ -73,6 +74,7 @@ file(GLOB REPROCESSOR_SOURCES
     "reprocessor/log_formatter/*.cpp"
     "reprocessor/log_parser/*.cpp"
     "reprocessor/name_mapper/*.cpp"
+    "reprocessor/validator/*.cpp"
 )
 file(GLOB DB_INSERTER_SOURCES 
     "db_inserter/*.cpp"

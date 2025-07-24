@@ -17,16 +17,36 @@ bool Reprocessor::configure(const std::string& mappingFilePath) {
     return mapper.loadMappings(jsonDataOpt.value());
 }
 
-std::vector<DailyData> Reprocessor::processLogFile(
-    const std::string& logFilePath,
-    std::optional<int> specifiedYear
-) {
-    // 步骤 1: 确定要使用的年份 (此逻辑保留在协调者中是合理的)
+/**
+ * @brief (新) 纯验证接口的实现
+ */
+bool Reprocessor::validateFile(const std::string& logFilePath) const {
+    // 直接将任务委托给 Validator
+    return Validator::validate(logFilePath);
+}
+
+/**
+ * @brief (新) 纯解析接口的实现
+ */
+std::optional<std::vector<DailyData>> Reprocessor::parseFile(const std::string& logFilePath) {
+    // 注意：这里不再进行验证
+    if (!parser.parseFile(logFilePath)) {
+        std::cerr << "Error: [Reprocessor] Parsing log file failed." << std::endl;
+        return std::nullopt;
+    }
+
+    return parser.getParsedData();
+}
+
+/**
+ * @brief 数据处理接口实现 (保持不变)
+ */
+void Reprocessor::processData(std::vector<DailyData>& data, std::optional<int> specifiedYear) {
+    // 步骤 1: 确定要使用的年份
     int yearToUse;
     if (specifiedYear.has_value()) {
         yearToUse = specifiedYear.value();
     } else {
-        // 如果未指定年份，自动获取当前系统年份
         const auto now = std::chrono::system_clock::now();
         const auto in_time_t = std::chrono::system_clock::to_time_t(now);
         std::tm buf;
@@ -38,32 +58,20 @@ std::vector<DailyData> Reprocessor::processLogFile(
         yearToUse = 1900 + buf.tm_year;
     }
 
-    // 步骤 2: (委托) 解析原始日志文件
-    if (!parser.parseFile(logFilePath)) {
-        std::cerr << "Error: [Reprocessor] Parsing log file failed." << std::endl;
-        return {}; // 返回空向量表示失败
-    }
-    std::vector<DailyData> data = parser.getParsedData();
-
-    // 步骤 3: (委托) 补全年份并格式化日期
+    // 步骤 3: 补全年份并格式化日期
     DateProcessor::completeDates(data, yearToUse);
 
-    // 步骤 4: (委托) 计算训练容量
+    // 步骤 4: 计算训练容量
     VolumeCalculator::calculateVolume(data); 
 
-    // 步骤 5: (委托) 应用名称映射
+    // 步骤 5: 应用名称映射
     for (auto& dailyData : data) {
         for (auto& project : dailyData.projects) {
             project.projectName = mapper.getFullName(project.projectName);
         }
     }
-
-    // 步骤 6: 返回处理完成的数据
-    return data;
 }
 
-std::string Reprocessor::formatDataToString(const std::vector<DailyData>& processedData)
-{
-    // 将格式化任务委托给 LogFormatter 模块
+std::string Reprocessor::formatDataToString(const std::vector<DailyData>& processedData) {
     return LogFormatter::format(processedData);
 }
