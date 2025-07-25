@@ -152,9 +152,8 @@ def run_main_command(base_dir):
             f.write(f"--- CRITICAL ERROR ---\n脚本执行命令时发生严重错误。\n错误详情: {e}\n")
         return False
 
-# ===================================================================
+
 # 主函数
-# ===================================================================
 
 def main():
     """主函数，协调整个测试流程。"""
@@ -180,7 +179,7 @@ def main():
         sys.exit(1)
     
     # 所有步骤成功
-    print(f"\n{GREEN}✅ 所有测试步骤均已成功完成!{RESET}")
+    print(f"\n{GREEN}✅ 所有测试步骤完成!{RESET}")
     print(f"{GREEN}   请检查 'test_output' 目录以获取详细的运行日志。{RESET}")
 
 if __name__ == '__main__':
