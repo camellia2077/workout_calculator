@@ -10,10 +10,10 @@ import sys
 # ===================================================================
 
 # *** 重要: 请确保此路径为您项目中 workout_tracker_cli.exe 所在的实际构建目录 ***
-BUILD_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator\main\build"
+BUILD_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator1\workout_calculator\workout_calculator\build"
 
 # *** 重要: 请确保此路径为您的测试数据（RECORD）所在的文件夹 ***
-INPUT_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator\my_test\RECORD"
+INPUT_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator1\RECORD"
 
 # 定义可执行文件名
 EXE_NAME = 'workout_tracker_cli.exe'
