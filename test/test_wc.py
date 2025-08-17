@@ -10,13 +10,15 @@ import sys
 # ===================================================================
 
 # *** 重要: 请确保此路径为您项目中 workout_tracker_cli.exe 所在的实际构建目录 ***
-BUILD_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator1\workout_calculator\workout_calculator\build"
+BUILD_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator\workout_calculator\workout_calculator\build"
 
 # *** 重要: 请确保此路径为您的测试数据（RECORD）所在的文件夹 ***
-INPUT_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator1\RECORD"
+INPUT_DIR = r"C:\Computer\my_github\github_cpp\workout_calculator\RECORD"
 
 # 定义可执行文件名
 EXE_NAME = 'workout_tracker_cli.exe'
+# --- 新增: 定义配置文件名 ---
+CONFIG_NAME = 'mapping.json'
 
 # 定义需要清理的文件夹
 DIRS_TO_DELETE = [
@@ -49,15 +51,18 @@ def cleanup(base_dir):
     print(f"{CYAN}--- 1. Cleaning Workspace ---{RESET}")
     success = True
     
-    # 清理旧的 .exe 文件
-    exe_path = os.path.join(base_dir, EXE_NAME)
-    if os.path.exists(exe_path):
-        try:
-            os.remove(exe_path)
-            print(f"  {GREEN}已删除旧的可执行文件: {EXE_NAME}{RESET}")
-        except OSError as e:
-            print(f"  {RED}删除文件 '{exe_path}' 时出错: {e}{RESET}")
-            success = False
+    # --- 已修改: 将要删除的文件放入一个列表 ---
+    files_to_delete = [EXE_NAME, CONFIG_NAME]
+
+    for file_name in files_to_delete:
+        file_path = os.path.join(base_dir, file_name)
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                print(f"  {GREEN}已删除旧的文件: {file_name}{RESET}")
+            except OSError as e:
+                print(f"  {RED}删除文件 '{file_path}' 时出错: {e}{RESET}")
+                success = False
 
     # 清理旧的目录
     for dir_name in DIRS_TO_DELETE:
@@ -73,23 +78,35 @@ def cleanup(base_dir):
     return success
 
 def prepare_executable(base_dir):
-    """从build目录复制可执行文件到当前目录。"""
-    print(f"{CYAN}--- 2. Preparing Executable ---{RESET}")
-    source_exe_path = os.path.join(BUILD_DIR, EXE_NAME)
-    dest_exe_path = os.path.join(base_dir, EXE_NAME)
+    """从build目录复制可执行文件和配置文件到当前目录。"""
+    print(f"{CYAN}--- 2. Preparing Dependencies ---{RESET}")
+    
+    # --- 已修改: 将要复制的文件放入一个字典 ---
+    files_to_copy = {
+        EXE_NAME: "可执行文件",
+        CONFIG_NAME: "配置文件"
+    }
 
-    if not os.path.exists(source_exe_path):
-        print(f"  {RED}错误: 源文件未找到 '{source_exe_path}'.{RESET}")
-        print(f"  {YELLOW}请检查 'BUILD_DIR' 变量是否设置正确。{RESET}")
-        return False
+    all_success = True
+    for file_name, file_desc in files_to_copy.items():
+        source_path = os.path.join(BUILD_DIR, file_name)
+        dest_path = os.path.join(base_dir, file_name)
 
-    try:
-        shutil.copy(source_exe_path, dest_exe_path)
-        print(f"  {GREEN}可执行文件已成功复制到当前目录。{RESET}")
-        return True
-    except IOError as e:
-        print(f"  {RED}复制文件时出错: {e}{RESET}")
-        return False
+        if not os.path.exists(source_path):
+            print(f"  {RED}错误: 源文件未找到 '{source_path}'.{RESET}")
+            print(f"  {YELLOW}请检查 'BUILD_DIR' 变量是否设置正确，并确保项目已成功编译。{RESET}")
+            all_success = False
+            continue
+
+        try:
+            shutil.copy(source_path, dest_path)
+            print(f"  {GREEN}{file_desc} '{file_name}' 已成功复制。{RESET}")
+        except IOError as e:
+            print(f"  {RED}复制文件 '{file_name}' 时出错: {e}{RESET}")
+            all_success = False
+            
+    return all_success
+
 
 def run_main_command(base_dir):
     """执行核心的命令行程序并记录日志。"""
@@ -171,7 +188,7 @@ def main():
         sys.exit(1)
         
     if not prepare_executable(script_dir):
-        print(f"\n{RED}❌ 准备可执行文件失败，测试终止。{RESET}")
+        print(f"\n{RED}❌ 准备依赖文件失败，测试终止。{RESET}")
         sys.exit(1)
         
     if not run_main_command(script_dir):
