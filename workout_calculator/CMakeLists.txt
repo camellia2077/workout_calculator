@@ -19,36 +19,38 @@ find_package(SQLite3 REQUIRED)
 
 # --- 仅为交互式应用收集其所需的源文件 ---
 message(STATUS "Gathering sources for 'workout_tracker_app'...")
-file(GLOB COMMON_SOURCES "common/*.cpp")
+file(GLOB COMMON_SOURCES "src/common/*.cpp")
 file(GLOB REPROCESSOR_SOURCES 
-    "reprocessor/*.cpp"
-    "reprocessor/volume_calculator/*.cpp"
-    "reprocessor/date_processor/*.cpp"
-    "reprocessor/log_formatter/*.cpp"
-    "reprocessor/log_parser/*.cpp"
-    "reprocessor/name_mapper/*.cpp"
-    "reprocessor/validator/*.cpp"
+    "src/reprocessor/*.cpp"
+    "src/reprocessor/volume_calculator/*.cpp"
+    "src/reprocessor/date_processor/*.cpp"
+    "src/reprocessor/log_formatter/*.cpp"
+    "src/reprocessor/log_parser/*.cpp"
+    "src/reprocessor/name_mapper/*.cpp"
+    "src/reprocessor/validator/*.cpp"
 )
 file(GLOB DB_INSERTER_SOURCES 
-    "db_inserter/*.cpp"
-    "db_inserter/_internal/*.cpp"
+    "src/db_inserter/*.cpp"
+    "src/db_inserter/_internal/*.cpp"
 )
-file(GLOB CONTROLLER_SOURCES "controller/*.cpp")
+# MODIFIED: 更新 controller 路径
+file(GLOB CONTROLLER_SOURCES "src/controller/*.cpp")
 
 add_executable(
     workout_tracker_app          # 可执行文件名
-    main_app.cpp                 # 入口文件
+    src/main_app.cpp             # MODIFIED: 更新入口文件路径
     ${COMMON_SOURCES}
     ${REPROCESSOR_SOURCES}
     ${DB_INSERTER_SOURCES}
     ${CONTROLLER_SOURCES}
 )
 
-# ]为交互式应用设置头文件路径 
+# 为交互式应用设置头文件路径
 target_include_directories(
     workout_tracker_app
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    # MODIFIED: 将 src 目录设为头文件根目录
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 # 为交互式应用链接库
@@ -66,26 +68,27 @@ target_link_libraries(
 
 # --- 仅为命令行工具收集其所需的源文件 ---
 message(STATUS "Gathering sources for 'workout_tracker_cli'...")
-file(GLOB COMMON_SOURCES "common/*.cpp")
+file(GLOB COMMON_SOURCES "src/common/*.cpp")
 file(GLOB REPROCESSOR_SOURCES 
-    "reprocessor/*.cpp"
-    "reprocessor/volume_calculator/*.cpp"
-    "reprocessor/date_processor/*.cpp"
-    "reprocessor/log_formatter/*.cpp"
-    "reprocessor/log_parser/*.cpp"
-    "reprocessor/name_mapper/*.cpp"
-    "reprocessor/validator/*.cpp"
+    "src/reprocessor/*.cpp"
+    "src/reprocessor/volume_calculator/*.cpp"
+    "src/reprocessor/date_processor/*.cpp"
+    "src/reprocessor/log_formatter/*.cpp"
+    "src/reprocessor/log_parser/*.cpp"
+    "src/reprocessor/name_mapper/*.cpp"
+    "src/reprocessor/validator/*.cpp"
 )
 file(GLOB DB_INSERTER_SOURCES 
-    "db_inserter/*.cpp"
-    "db_inserter/_internal/*.cpp"
+    "src/db_inserter/*.cpp"
+    "src/db_inserter/_internal/*.cpp"
 )
-file(GLOB CONTROLLER_SOURCES "controller/*.cpp")
+# MODIFIED: 更新 controller 路径
+file(GLOB CONTROLLER_SOURCES "src/controller/*.cpp")
 
 
 add_executable(
     workout_tracker_cli          # 可执行文件名
-    main_cli.cpp                 # 入口文件
+    src/main_cli.cpp             # MODIFIED: 更新入口文件路径
     ${COMMON_SOURCES}
     ${REPROCESSOR_SOURCES}
     ${DB_INSERTER_SOURCES}
@@ -96,7 +99,8 @@ add_executable(
 target_include_directories(
     workout_tracker_cli
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+    # MODIFIED: 将 src 目录设为头文件根目录
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 # 为命令行工具链接库
