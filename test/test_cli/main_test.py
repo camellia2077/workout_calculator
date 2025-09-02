@@ -3,10 +3,10 @@
 import os
 import sys
 
-# 从其他模块导入核心功能
+# 只在主模块中导入配置
 import config
-from test_cleanup import cleanup
-from test_runner import run_all_tests
+from test_cleanup import Cleaner
+from test_runner import TestRunner
 
 # 定义ANSI颜色代码
 GREEN = '\033[92m'
@@ -27,13 +27,11 @@ def main():
     if os.name == 'nt':
         os.system('color')
     
-    # --- [MODIFIED] 命令行参数解析 ---
-    args = sys.argv[1:] # 获取除脚本名外的所有参数
+    args = sys.argv[1:]
     if not args:
         print_usage()
         sys.exit(1)
-        
-    command = args[0].lower() # 获取命令并转为小写
+    command = args[0].lower()
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
@@ -44,26 +42,26 @@ def main():
         work_dir = script_dir
 
     print(f"\n{CYAN}========== Workout Tracker CLI Test Utility =========={RESET}")
-    print(f"脚本位置: {script_dir}")
     print(f"测试输出目录: {work_dir}")
     print(f"执行命令: '{command}'")
 
-    # --- [MODIFIED] 根据命令执行不同逻辑 ---
+    # [MODIFIED] 实例化 Cleaner 类并注入配置
+    cleaner = Cleaner(work_dir, config.DIRS_TO_DELETE, config.FILES_TO_DELETE)
 
     if command == 'clean':
-        # 只执行清理
-        if not cleanup(work_dir):
+        if not cleaner.run():
             print(f"\n{RED}❌ 清理步骤失败。{RESET}")
             sys.exit(1)
         print(f"\n{GREEN}✅ 清理操作成功完成!{RESET}")
 
     elif command == 'test':
-        # 先清理，再测试
-        if not cleanup(work_dir):
+        if not cleaner.run():
             print(f"\n{RED}❌ 清理步骤失败，测试终止。{RESET}")
             sys.exit(1)
         
-        if not run_all_tests(script_dir, work_dir):
+        # [MODIFIED] 实例化 TestRunner 类并注入配置
+        runner = TestRunner(config, work_dir)
+        if not runner.run_all():
             print(f"\n{RED}❌ 测试流程失败，已终止。{RESET}")
             sys.exit(1)
 
@@ -71,7 +69,6 @@ def main():
         print(f"{GREEN}   请检查 '{os.path.join(work_dir, 'output_file', 'md')}' 目录以验证最终报告。{RESET}")
 
     else:
-        # 未知命令
         print(f"\n{RED}错误: 未知命令 '{command}'{RESET}")
         print_usage()
         sys.exit(1)
